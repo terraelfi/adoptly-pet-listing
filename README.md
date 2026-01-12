@@ -98,4 +98,3 @@ lib/
 <p align="center">
   Made with ❤️ for pets and their future families
 </p>
-# adoptly-pet-listing
