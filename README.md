@@ -1,7 +1,7 @@
 # 🐾 Adoptly - Pet Adoption & Listing App
 
 <p align="center">
-  <img src="assets/images/adoptlyIcon.png" alt="Adoptly Logo" width="200"/>
+  <img src="assets/icon/adoptlyIcon.png" alt="Adoptly Logo" width="200"/>
 </p>
 
 <p align="center">
