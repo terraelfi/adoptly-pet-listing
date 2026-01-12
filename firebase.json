@@ -1,0 +1,26 @@
+{
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "adoptly-pet-listings",
+          "appId": "1:692718257159:android:8d512788b6c29d581f96a2",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "adoptly-pet-listings",
+          "configurations": {
+            "android": "1:692718257159:android:8d512788b6c29d581f96a2",
+            "ios": "1:692718257159:ios:cb6300c5cd5c1d731f96a2",
+            "web": "1:692718257159:web:557885a28716f09e1f96a2"
+          }
+        }
+      }
+    }
+  }
+}

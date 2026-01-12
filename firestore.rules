@@ -1,0 +1,115 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Admin UID (same as in auth_service.dart)
+    function isAdmin() {
+      return request.auth != null && request.auth.uid == 'Tb283fE0wJXmdDsgK4JvWKarce73';
+    }
+    
+    // Check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Check if user is the owner of the document
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      // Anyone can read user profiles
+      allow read: if true;
+      // Users can create their own profile
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      // Users can update their own profile, admins can update any profile
+      allow update: if isOwner(userId) || isAdmin();
+      // Users can delete their own profile, admins can delete any profile
+      allow delete: if isOwner(userId) || isAdmin();
+    }
+    
+    // Pets collection
+    match /pets/{petId} {
+      // Anyone can read pets
+      allow read: if true;
+      // Authenticated users can create pets
+      allow create: if isAuthenticated();
+      // Pet owners can update their own pets, admins can update any pet
+      allow update: if isAuthenticated() && 
+        (isOwner(resource.data.userId) || isAdmin());
+      // Pet owners can delete their own pets, admins can delete any pet
+      allow delete: if isAuthenticated() && 
+        (isOwner(resource.data.userId) || isAdmin());
+    }
+    
+    // Saved pets collection
+    match /saved_pets/{savedId} {
+      // Users can read their own saved pets
+      allow read: if isAuthenticated() && isOwner(resource.data.userId);
+      // Users can create their own saved pets
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      // Users can delete their own saved pets, admins can delete any saved pet
+      allow delete: if isAuthenticated() && 
+        (isOwner(resource.data.userId) || isAdmin());
+    }
+    
+    // Chat rooms collection
+    match /chatRooms/{roomId} {
+      // Participants can read their chat rooms
+      allow read: if isAuthenticated() && 
+        (request.auth.uid in resource.data.participants || isAdmin());
+      // Authenticated users can create chat rooms
+      allow create: if isAuthenticated();
+      // Participants can update their chat rooms
+      allow update: if isAuthenticated() && 
+        (request.auth.uid in resource.data.participants || isAdmin());
+      // Participants can delete their chat rooms, admins can delete any room
+      allow delete: if isAuthenticated() && 
+        (request.auth.uid in resource.data.participants || isAdmin());
+      
+      // Messages subcollection
+      match /messages/{messageId} {
+        // Participants can read messages
+        allow read: if isAuthenticated() && 
+          (request.auth.uid in get(/databases/$(database)/documents/chatRooms/$(roomId)).data.participants || isAdmin());
+        // Participants can create messages
+        allow create: if isAuthenticated() && 
+          (request.auth.uid in get(/databases/$(database)/documents/chatRooms/$(roomId)).data.participants || isAdmin());
+        // Message senders can update their own messages, admins can update any
+        allow update: if isAuthenticated() && 
+          (isOwner(resource.data.senderId) || isAdmin());
+        // Message senders can delete their own messages, admins can delete any
+        allow delete: if isAuthenticated() && 
+          (isOwner(resource.data.senderId) || isAdmin());
+      }
+    }
+    
+    // Donations collection (if you have one)
+    match /donations/{donationId} {
+      // Anyone can read donations
+      allow read: if true;
+      // Authenticated users can create donations
+      allow create: if isAuthenticated();
+      // Admins can update and delete donations
+      allow update, delete: if isAdmin();
+    }
+    
+    // Default deny all other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
